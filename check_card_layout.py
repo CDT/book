@@ -26,6 +26,12 @@ window.addEventListener("load", () => {
     if (width > frame.width || height > frame.height) {
       return `renders at ${width} × ${height}px`;
     }
+
+    const bodyStyle = frame.contentWindow.getComputedStyle(page.body);
+    const bottomMargin = parseFloat(bodyStyle.paddingBottom);
+    if (content !== page.body && content.getBoundingClientRect().bottom > frame.height - bottomMargin) {
+      return "content extends into the bottom margin";
+    }
     return null;
   });
   document.querySelector("#result").textContent = JSON.stringify(results);

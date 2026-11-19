@@ -7,8 +7,7 @@ from pathlib import Path
 from urllib.parse import quote, unquote, urlsplit
 from xml.etree import ElementTree
 
-from build_epub import MEDIA_TYPES, ROOT, XHTML, XML_LANG
-from build_pdf import BOOK_PDF
+from build_epub import BOOK, MEDIA_TYPES, ROOT, XHTML, XML_LANG
 
 
 CARDS = ROOT / "cards"
@@ -18,7 +17,7 @@ STATIC_FILES = {
     "/styles.css": (SITE / "styles.css", "text/css; charset=utf-8"),
     "/card-content.js": (SITE / "card-content.js", "text/javascript; charset=utf-8"),
     "/viewer.js": (SITE / "viewer.js", "text/javascript; charset=utf-8"),
-    "/book.pdf": (BOOK_PDF, "application/pdf"),
+    "/book.epub": (BOOK, "application/epub+zip"),
 }
 
 

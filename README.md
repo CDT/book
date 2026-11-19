@@ -4,19 +4,13 @@
 
 Run `python serve_cards.py` and open [the card library](http://localhost:2345). The viewer reads the same XHTML files as the EPUB builder. Refresh the browser after adding or editing cards.
 
-## PDF
-
-Run `python build_pdf.py` to shuffle the deck and write `output/pdf/book.pdf`, the file served by the site's Download PDF button. The PDF shares the web viewer's card styles and places one card on each page, with the page height trimmed to the content. Rebuild after adding or editing cards.
-
-The PDF build uses Chrome, Chromium, or Edge and the `pypdf` Python package (`python -m pip install pypdf`). Use `--seed 42` for a repeatable shuffle or `--browser` for a custom browser executable.
-
 ## EPUB
 
-Run `python build_epub.py` to shuffle the deck and write `book.epub`. The EPUB’s reading order and table of contents use the same shuffle. For a repeatable order with the same set of cards, run `python build_epub.py --seed 42`.
+Run `python build_epub.py` to shuffle the deck and write `book.epub`, which the web viewer serves through its **Download EPUB** button. Rebuild after adding or editing cards. The EPUB’s reading order and table of contents use the same shuffle. For a repeatable order with the same set of cards, run `python build_epub.py --seed 42`.
 
 The builder uses Chrome, Chromium, or Edge to check that every card fits on one page before writing the EPUB. Use `--browser` to point to a browser executable in a custom location.
 
-Add one UTF-8 XHTML file per card under `cards/`.
+Each EPUB page contains one knowledge point. Add one UTF-8 XHTML file per knowledge point under `cards/`. The EPUB uses a single-page fixed layout with high-contrast type and compact illustrations for small screens. If a card overflows, shorten its text or illustration until it fits at the shared font size.
 
 | Category | Directory |
 | --- | --- |

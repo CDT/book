@@ -6,77 +6,50 @@ html, body {
 
 body {
   box-sizing: border-box;
-  padding: 26px;
-  background: #e9eeff;
-  color: #182345;
-  font: 19px/1.38 Georgia, "Times New Roman", serif;
+  padding: 24px 32px;
+  background: #fff;
+  color: #111;
+  font: 23px/1.32 Arial, "Hiragino Sans", "Noto Sans CJK SC", sans-serif;
 }
 
 main {
-  box-sizing: border-box;
-  min-height: 848px;
-  padding: 24px 31px 19px;
-  background: #fbfcff;
-  border: 1px solid #c7d2f0;
-  border-top: 6px solid #253dc0;
-  border-radius: 16px;
-  box-shadow: 0 5px 14px #ccd6f3;
   overflow-wrap: break-word;
 }
 
-h1, h2, p, ul {
+h1, h2, p, ul, dl {
   margin: 0;
 }
 
-.label, h2, .phonetics, footer {
-  font-family: "Segoe UI", Arial, sans-serif;
-}
-
-.label, h2 {
-  color: #192b91;
-  font-size: 14px;
+.label, h2, .word-parts dt {
+  font-size: 18px;
   font-weight: bold;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.label {
-  display: inline-block;
-  padding: 4px 10px;
-  background: #e2e9ff;
-  border-radius: 5px;
 }
 
 h1 {
-  margin: 8px 0 7px;
-  font-size: 68px;
-  line-height: 1.01;
-  letter-spacing: -0.055em;
+  margin: 5px 0 6px;
+  font-size: 48px;
+  line-height: 1.12;
 }
 
 .phonetics {
-  color: #465678;
-  font-size: 17px;
+  font-size: 20px;
 }
 
 .phonetics span {
-  color: #192b91;
-  font-size: 13px;
+  font-size: 18px;
   font-weight: bold;
 }
 
 .phonetics span + span {
-  margin-left: 14px;
+  margin-left: 12px;
 }
 
 .definition {
-  margin-top: 10px;
-  font-size: 20px;
+  margin-top: 8px;
 }
 
 .definition em {
   margin-right: 6px;
-  color: #465678;
 }
 
 img {
@@ -87,24 +60,18 @@ img {
 .illustration {
   display: block;
   width: 100%;
-  margin-top: 14px;
-  border-radius: 9px;
-}
-
-.illustration[data-word-in-image] {
-  height: 250px;
-  object-fit: cover;
+  max-height: 200px;
+  margin-top: 12px;
+  object-fit: contain;
 }
 
 section {
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .etymology {
-  padding: 10px 13px;
-  background: #eef2ff;
-  border-left: 3px solid #5369d9;
-  border-radius: 5px;
+  padding: 8px 12px;
+  border: 1px solid #666;
 }
 
 h2 {
@@ -113,14 +80,10 @@ h2 {
 
 .word-parts {
   display: flex;
-  gap: 12px;
-  margin: 0 0 5px;
-  font-size: 15px;
-}
-
-.word-parts dt {
-  font: bold 12px/1.3 "Segoe UI", Arial, sans-serif;
-  color: #192b91;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-bottom: 4px;
+  font-size: 20px;
 }
 
 .word-parts dd {
@@ -128,11 +91,7 @@ h2 {
 }
 
 ul {
-  padding-left: 21px;
-}
-
-li::marker {
-  color: #253dc0;
+  padding-left: 25px;
 }
 
 li + li {
@@ -140,14 +99,13 @@ li + li {
 }
 
 footer {
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px solid #d5def6;
-  color: #465678;
-  font-size: 13px;
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid #666;
+  font-size: 18px;
 }
 
 a {
-  color: #192b91;
-  text-underline-offset: 0.2em;
+  color: inherit;
+  text-decoration: underline;
 }
