@@ -1,0 +1,19 @@
+@page { size: A4 portrait; margin: 0; }
+
+html { background: white; }
+
+.print-page {
+  width: 210mm;
+  height: 296.8mm;
+  padding: 14px 20px;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.print-page + .print-page { break-before: page; }
+.print-page .card-content { padding: 0; font-size: 18px; line-height: 1.45; }
+.print-page .card-content:has(.word-in-image) .label { display: none; }
+.print-page .card-content:has(.word-in-image) .card-hero { margin-top: 0; }
+.print-page .card-content .card-hero .illustration { aspect-ratio: 2.05; }
+.print-page .card-content section { margin-top: 0.65rem; }
+.print-page .card-content footer { margin-top: 0.65rem; padding-top: 0.4rem; }
