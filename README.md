@@ -10,7 +10,7 @@ Run `python build_epub.py` to shuffle the deck and write `book.epub`, which the 
 
 The builder uses Chrome, Chromium, or Edge to check that every card fits on one page before writing the EPUB. Use `--browser` to point to a browser executable in a custom location.
 
-Each EPUB page contains one knowledge point. Add one UTF-8 XHTML file per knowledge point under `cards/`. The EPUB uses a single-page fixed layout with high-contrast type and compact illustrations for small screens. If a card overflows, shorten its text or illustration until it fits at the shared font size.
+Each EPUB page contains one knowledge point. Add one UTF-8 XHTML file per knowledge point under `cards/`. The EPUB uses a single-page fixed layout with high-contrast type and compact illustrations for small screens. Keep the main explanation brief and use one short example where helpful. If a card overflows, trim repeated wording and secondary details, or shorten the illustration. Keep the shared font size and rerun the build until the card fits on one page.
 
 | Category | Directory |
 | --- | --- |
