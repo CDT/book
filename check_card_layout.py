@@ -10,8 +10,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
-WIDTH = 640
-HEIGHT = 900
+WIDTH = 528
+HEIGHT = 792
 CHECK_SCRIPT = """
 <script>
 window.addEventListener("load", () => {

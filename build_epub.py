@@ -77,6 +77,7 @@ def build_epub(source_dir, output, rng, browser=None):
     {language_tags}
     <meta property="dcterms:modified">{modified}</meta>
     <meta property="rendition:layout">pre-paginated</meta>
+    <meta property="rendition:orientation">portrait</meta>
     <meta property="rendition:spread">none</meta>
   </metadata>
   <manifest>{''.join(manifest)}</manifest>
