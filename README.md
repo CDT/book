@@ -6,11 +6,11 @@ Run `python serve_cards.py` and open [the card library](http://localhost:2345). 
 
 ## EPUB for Xteink X3
 
-Run `python build_epub.py` to shuffle the deck and write `book.epub`, which the web viewer serves through its **Download EPUB** button. Rebuild after adding or editing cards. The EPUB’s reading order and table of contents use the same shuffle. For a repeatable order with the same set of cards, run `python build_epub.py --seed 42`.
+Install the build dependencies with `python -m pip install -r requirements.txt`. Run `python build_epub.py` to shuffle the deck and create `book.epub`. The web viewer serves this file through its **Download EPUB** button. Run with `--seed 42` for a repeatable order.
 
-The builder uses Chrome, Chromium, or Edge to check that every card fits on one page before writing the EPUB. Use `--browser` to point to a browser executable in a custom location.
+The Xteink X3 edition packages each knowledge point as one baseline grayscale JPEG inside its own EPUB page. The EPUB declares a 528 × 792 portrait viewport. Each image is 448 × 610 to leave space for the reader’s margins and chapter indicator. On the reader, keep EPUB images enabled. On devices that reflow EPUB text, the text is already drawn into each card image.
 
-Each EPUB page contains one knowledge point. Add one UTF-8 XHTML file per knowledge point under `cards/`. The EPUB uses the Xteink X3’s 528 × 792 portrait viewport, with a single card per page, dark text on a white background, and compact illustrations. Keep the main explanation brief and use one short example where helpful. If a card overflows, trim repeated wording and secondary details, or shorten the illustration. Keep the shared font size and rerun the build until the card fits on one page.
+Put each knowledge point in its own UTF-8 XHTML file under `cards/`. Include one small, high-contrast illustration to support the meaning, and keep the explanation to one short definition, a useful phrase and one short example. If a card is too long, the build reports its filename. Trim the card and rebuild.
 
 | Category | Directory |
 | --- | --- |
@@ -18,4 +18,4 @@ Each EPUB page contains one knowledge point. Add one UTF-8 XHTML file per knowle
 | Citations | `cards/citations/` |
 | Philosophy and history | `cards/knowledge/` |
 
-Use [the first vocabulary card](cards/vocabulary/remuneration.xhtml) for the shared stylesheet and fixed viewport. Give each card its own title, set both `lang` and `xml:lang` to the card’s language (for example, `ja` for Japanese), and keep its contents within the 528 × 792 page. Save card images under `cards/images/` and reference them with relative paths and descriptive alt text.
+Use [the first vocabulary card](cards/vocabulary/remuneration.xhtml) for the source structure and shared web stylesheet. Give each card its own title, set both `lang` and `xml:lang` to the card’s language (for example, `ja` for Japanese). Save card images under `cards/images/` and reference them with relative paths and descriptive alt text.
