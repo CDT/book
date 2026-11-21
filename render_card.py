@@ -34,7 +34,10 @@ img { width: 272pt; height: auto; }
 .compact p { margin: 0 0 3pt; }
 .compact section { margin: 0; }
 
-
+/* Classic Chinese sayings: one restored illustration per one-page card. */
+.quote { text-align:center; }
+.quote h1 { font: bold 26pt/1.35 sans-serif; margin: 12pt 0 14pt; }
+.quote img { width: 305pt; height: auto; margin: 5pt auto; }
 """
 
 

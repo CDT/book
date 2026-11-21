@@ -38,3 +38,7 @@ publish the site from a public repository instead.
 
 To preview locally, run `python serve_cards.py`. To test the deploy
 files locally, run `python build_epub.py && python build_site.py`.
+
+## Restored classical Chinese quotations
+
+The collection also contains **30 illustrated selections from 增广贤文** under `cards/citations/`, restored from the original X3 EPUB. The web reader shuffles these together with the **17 English vocabulary cards** into a single 47-card deck; it intentionally has no category/search/list interface. Each quote retains its separate grayscale illustration, and EPUB generation still enforces one page per card.

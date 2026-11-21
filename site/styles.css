@@ -176,3 +176,23 @@ button { font: inherit; }
   .card-content section h2 { font-size: 11px; }
   .card-content section p, .card-content section li { font-size: 14px; }
 }
+
+/* Restored illustrated classical Chinese quotations (no category interface). */
+.card-content:has(.quote-text) { text-align: center; }
+.card-content .quote-text {
+  margin: 0 auto 8px;
+  font-size: clamp(21px, 5.7vw, 29px);
+  line-height: 1.42;
+  letter-spacing: 0;
+  font-weight: 650;
+  text-wrap: balance;
+}
+.card-content:has(.quote-text) .illustration {
+  width: 100%; height: auto; max-height: 180px;
+  object-fit: contain;
+  margin: 8px auto 0;
+}
+@media (max-height: 640px) {
+  .card-content .quote-text { font-size: 22px; }
+  .card-content:has(.quote-text) .illustration { max-height: 142px; }
+}
