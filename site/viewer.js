@@ -73,7 +73,7 @@ async function showCard(index) {
 
 async function openLibrary() {
   try {
-    const response = await fetch("/api/cards");
+    const response = await fetch("catalog.json");
     if (!response.ok) throw new Error("Library unavailable");
     catalog = await response.json();
     document.querySelector("#deck-total").textContent =

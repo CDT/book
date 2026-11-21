@@ -31,7 +31,7 @@ def card_catalog():
             "title": title or path.stem,
             "language": page.get(XML_LANG, "en"),
             "category": relative.parts[0] if len(relative.parts) > 1 else "",
-            "url": "/cards/" + quote(relative.as_posix()),
+            "url": "cards/" + quote(relative.as_posix()),
         })
     return catalog
 
@@ -45,7 +45,7 @@ class CardHandler(BaseHTTPRequestHandler):
 
     def serve(self, include_body=True):
         route = unquote(urlsplit(self.path).path)
-        if route == "/api/cards":
+        if route in {"/api/cards", "/catalog.json"}:
             try:
                 data = json.dumps(card_catalog(), ensure_ascii=False).encode("utf-8")
             except (OSError, ElementTree.ParseError) as error:

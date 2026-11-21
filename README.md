@@ -19,3 +19,22 @@ Put each knowledge point in its own UTF-8 XHTML file under `cards/`. Include one
 | Philosophy and history | `cards/knowledge/` |
 
 Use [the first vocabulary card](cards/vocabulary/remuneration.xhtml) for the source structure and shared web stylesheet. Give each card its own title, set both `lang` and `xml:lang` to the card’s language (for example, `ja` for Japanese). Save card images under `cards/images/` and reference them with relative paths and descriptive alt text.
+
+## GitHub Pages deployment
+
+The website is published via [GitHub Actions](.github/workflows/pages.yml) when `main` changes.
+The default project-site URL is `https://cdt.github.io/book/`.
+
+Pages has no Python server, so `build_site.py` writes `dist/catalog.json` and
+copies all XHTML cards and illustrations as static assets. Website links are
+relative, so the viewer works locally and under the `/book/` project path.
+The workflow builds the X3 EPUB and includes it in the download link.
+
+If Pages hasn't been activated automatically, open **Settings → Pages**
+and set **Build and deployment → Source: GitHub Actions**; then rerun
+the **Publish Knowledge Cards** workflow. GitHub Pages on a **private**
+repository requires a GitHub Pro, Team, or Enterprise plan. Otherwise,
+publish the site from a public repository instead.
+
+To preview locally, run `python serve_cards.py`. To test the deploy
+files locally, run `python build_epub.py && python build_site.py`.
