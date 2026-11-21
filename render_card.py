@@ -23,6 +23,17 @@ p, ul, dl { margin: 0 0 7pt; }
 .definition { font-size: 25pt; }
 .definition em { font-size: 19pt; }
 img { width: 272pt; height: auto; }
+/* Compact, illustrated one-page X3 vocabulary cards. */
+.compact { font: 18pt/1.18 sans-serif; }
+.compact h1 { font: bold 31pt/1.1 sans-serif; margin: 0 0 3pt; }
+.compact .phonetics { font: 16pt/1.15 sans-serif; margin: 0 0 5pt; }
+.compact .definition { font: 19pt/1.18 sans-serif; margin: 0 0 5pt; }
+.compact .definition em { font-size: 15pt; }
+.compact img { width: 252pt; height: auto; margin: 4pt 0 7pt; }
+.compact h2 { font: bold 13pt/1.1 sans-serif; margin: 7pt 0 1pt; }
+.compact p { margin: 0 0 3pt; }
+.compact section { margin: 0; }
+
 
 """
 

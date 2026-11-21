@@ -111,3 +111,13 @@ a {
   color: inherit;
   text-decoration: underline;
 }
+
+/* Compact vocabulary card, mirroring the X3 reading order. */
+.compact { font-size: 23px; line-height: 1.2; }
+.compact h1 { font-size: 43px; margin: 2px 0 4px; }
+.compact .phonetics { font-size: 20px; margin-bottom: 5px; }
+.compact .definition { font-size: 25px; margin-bottom: 6px; }
+.compact .illustration { width: 100%; max-height: 185px; margin: 6px 0; object-fit: contain; }
+.compact section { margin-top: 6px; }
+.compact section h2 { font-size: 17px; margin-bottom: 2px; }
+.compact section p { font-size: 22px; margin: 0; }
