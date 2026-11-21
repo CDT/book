@@ -1,47 +1,23 @@
-function renderCard(card, xhtml, baseUrl, language) {
-  const source = new DOMParser().parseFromString(xhtml, "application/xhtml+xml");
-  const content = source.querySelector("main") || source.querySelector("body");
-  if (!content) throw new Error("Invalid card");
+/** Display the original XHTML card content without changing its hierarchy.
+ * Web styling is entirely separate from the e-reader/EPUB stylesheet.
+ */
+function renderCard(target, xhtml, baseUrl, language) {
+  const documentNode = new DOMParser().parseFromString(xhtml, 'application/xhtml+xml');
+  if (documentNode.querySelector('parsererror')) {
+    throw new Error('Invalid card XHTML');
+  }
+  const content = documentNode.querySelector('main') || documentNode.querySelector('body');
+  if (!content) throw new Error('Missing card content');
 
-  for (const element of content.querySelectorAll("img[src], a[href]")) {
-    const attr = element.localName === "img" ? "src" : "href";
-    const value = element.getAttribute(attr);
-    if (!value.startsWith("#")) {
-      element.setAttribute(attr, new URL(value, baseUrl).href);
+  for (const el of content.querySelectorAll('img[src], a[href]')) {
+    const attr = el.localName === 'img' ? 'src' : 'href';
+    const value = el.getAttribute(attr);
+    if (value && !value.startsWith('#')) {
+      el.setAttribute(attr, new URL(value, baseUrl).href);
     }
   }
-  card.lang = language || source.documentElement.getAttribute("xml:lang") || "en";
-  card.replaceChildren(...content.childNodes);
 
-  const heading = card.querySelector("h1");
-  if (heading) {
-    const subheading = document.createElement("h2");
-    subheading.className = "card-title";
-    subheading.append(...heading.childNodes);
-    heading.replaceWith(subheading);
-
-    const illustration = card.querySelector(".illustration");
-    const definition = card.querySelector(".definition");
-    if (illustration && definition) {
-      const hero = document.createElement("figure");
-      hero.className = "card-hero";
-      const caption = document.createElement("figcaption");
-      illustration.replaceWith(hero);
-      hero.append(illustration, caption);
-      if (illustration.getAttribute("data-word-in-image") === "true") {
-        hero.classList.add("word-in-image");
-        subheading.classList.add("visually-hidden");
-      } else {
-        caption.append(subheading);
-      }
-      caption.append(definition);
-      const phonetics = card.querySelector(".phonetics");
-      if (phonetics) hero.after(phonetics);
-    }
-  }
-  for (const heading of card.querySelectorAll("section > h2")) {
-    const subheading = document.createElement("h3");
-    subheading.append(...heading.childNodes);
-    heading.replaceWith(subheading);
-  }
+  target.lang = language || documentNode.documentElement.getAttribute('xml:lang') || 'en';
+  target.classList.toggle('compact', content.classList.contains('compact'));
+  target.replaceChildren(...content.childNodes);
 }
