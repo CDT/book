@@ -57,6 +57,9 @@ jobs:
         with:
           path: dist
 
+      - name: Wait for Pages artifact indexing
+        run: sleep 10
+
       - name: Publish website
         id: deployment
         uses: actions/deploy-pages@v4
