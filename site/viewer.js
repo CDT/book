@@ -5,9 +5,21 @@ const next = document.querySelector('#next');
 const position = document.querySelector('#position');
 const message = document.querySelector('#message');
 
+// Small bounded window: the next four cards, plus two for going backwards.
+// Cache includes decoded images and the actual DOM nodes, not just card text.
+const PREFETCH_AHEAD = 4;
+const PREFETCH_BEHIND = 2;
+const MAX_BACKGROUND_FETCHES = 2;
+const MAX_CACHED_CARDS = 10;
+
 let deck = [];
 let currentIndex = 0;
-let currentRequest = null;
+let activeRecord = null;
+let displayVersion = 0;
+let backgroundRunning = 0;
+let prefetchQueue = [];
+let wantedUrls = new Set();
+const cardCache = new Map();
 
 function shuffle(cards) {
   const copy = [...cards];
@@ -18,8 +30,11 @@ function shuffle(cards) {
   return copy;
 }
 
-// Never scale the complete card: that also shrinks the picture and creates
-// large side margins. Compress typography only if a very short viewport needs it.
+function wrappedIndex(index) {
+  return (index % deck.length + deck.length) % deck.length;
+}
+
+// Never shrink the entire card, just slightly adjust typography when needed.
 function fitCard() {
   if (card.hidden) return;
   const content = card.querySelector('main');
@@ -33,58 +48,152 @@ function fitCard() {
   }
 }
 
-// Keep the placeholder visible until pixels are decoded, then fade in the image.
-// The image is absolutely positioned; neither load nor decode can shift text.
-function revealImages(request) {
-  for (const img of card.querySelectorAll('.media-frame img')) {
-    const frame = img.closest('.media-frame');
-    const finish = () => {
-      if (request.signal.aborted || !img.isConnected) return;
-      frame.classList.remove('is-loading');
-      frame.classList.add(img.naturalWidth > 0 ? 'is-loaded' : 'is-error');
-    };
-    if (typeof img.decode === 'function') {
-      img.decode().then(finish, () => {
-        if (img.complete) finish();
-        else {
-          img.addEventListener('load', finish, {once: true, signal: request.signal});
-          img.addEventListener('error', finish, {once: true, signal: request.signal});
-        }
-      });
-    } else if (img.complete) {
-      finish();
-    } else {
-      img.addEventListener('load', finish, {once: true, signal: request.signal});
-      img.addEventListener('error', finish, {once: true, signal: request.signal});
+// Prepare a REAL image node while detached from the page. Reusing that node
+// when showing the card means there is no second image request or fade-in.
+async function prepareImage(oldImage) {
+  const image = new Image();
+  for (const attr of oldImage.attributes) {
+    if (attr.name !== 'loading' && attr.name !== 'decoding') {
+      image.setAttribute(attr.name, attr.value);
     }
   }
+  image.loading = 'eager';
+  image.decoding = 'async';
+  oldImage.replaceWith(image);
+  let loaded = false;
+  try {
+    if (typeof image.decode === 'function') {
+      await image.decode();
+    } else if (!image.complete) {
+      await new Promise((resolve, reject) => {
+        image.addEventListener('load', resolve, {once: true});
+        image.addEventListener('error', reject, {once: true});
+      });
+    }
+    loaded = image.naturalWidth > 0;
+  } catch {
+    loaded = image.complete && image.naturalWidth > 0;
+  }
+  const frame = image.closest('.media-frame');
+  if (frame) {
+    frame.classList.remove('is-loading');
+    frame.classList.add(loaded ? 'is-loaded' : 'is-error');
+  }
+}
+
+function prepareCard(entry) {
+  const existing = cardCache.get(entry.url);
+  if (existing) {
+    // Map insertion order is our least-recently-used order.
+    cardCache.delete(entry.url);
+    cardCache.set(entry.url, existing);
+    return existing;
+  }
+
+  const record = {
+    entry,
+    holder: document.createElement('div'),
+    ready: false,
+    promise: null
+  };
+  cardCache.set(entry.url, record);
+  record.promise = (async () => {
+    const response = await fetch(entry.url);
+    if (!response.ok) throw new Error('Card unavailable');
+    const xhtml = await response.text();
+    renderCard(record.holder, xhtml, new URL(entry.url, document.baseURI), entry.language, entry.illustration_ratio);
+    await Promise.all([...record.holder.querySelectorAll('.media-frame img')].map(prepareImage));
+    record.ready = true;
+    return record;
+  })().catch(error => {
+    if (cardCache.get(entry.url) === record) cardCache.delete(entry.url);
+    throw error;
+  });
+  return record;
+}
+
+function pruneCache() {
+  // Retain the active card and its nearby cards; discard older detached DOM.
+  const keep = new Set(wantedUrls);
+  if (activeRecord) keep.add(activeRecord.entry.url);
+  for (const [url, record] of cardCache) {
+    if (record.ready && !keep.has(url) && record !== activeRecord) cardCache.delete(url);
+  }
+  for (const [url, record] of cardCache) {
+    if (cardCache.size <= MAX_CACHED_CARDS) break;
+    if (record.ready && record !== activeRecord && !keep.has(url)) cardCache.delete(url);
+  }
+}
+
+function drainPrefetchQueue() {
+  while (backgroundRunning < MAX_BACKGROUND_FETCHES && prefetchQueue.length) {
+    const entry = prefetchQueue.shift();
+    if (!wantedUrls.has(entry.url) || cardCache.has(entry.url)) continue;
+    backgroundRunning++;
+    prepareCard(entry).promise.catch(() => {
+      // A failed background request should not interrupt reading.
+    }).finally(() => {
+      backgroundRunning--;
+      pruneCache();
+      drainPrefetchQueue();
+    });
+  }
+}
+
+function schedulePreloads() {
+  // Prioritize the next card, then nearby forward/backward cards.
+  const offsets = [1, 2, -1, 3, 4, -2];
+  const entries = offsets.map(offset => deck[wrappedIndex(currentIndex + offset)]);
+  wantedUrls = new Set([deck[currentIndex].url, ...entries.map(entry => entry.url)]);
+  prefetchQueue = entries.filter(entry => !cardCache.has(entry.url));
+  pruneCache();
+  drainPrefetchQueue();
+}
+
+function activateCard(record) {
+  if (activeRecord && activeRecord !== record) {
+    // Return the current (already decoded) nodes to their cache record.
+    activeRecord.holder.replaceChildren(...card.childNodes);
+  }
+  if (activeRecord !== record) {
+    card.replaceChildren(...record.holder.childNodes);
+  }
+  activeRecord = record;
+  card.classList.toggle('compact', Boolean(card.querySelector('main.compact')));
+  card.lang = record.entry.language || 'en';
+  card.hidden = false;
+  message.hidden = true;
+  // Text fitting happens before the next paint, so it cannot jump afterwards.
+  fitCard();
 }
 
 async function showCard(index) {
   if (!deck.length) return;
-  currentRequest?.abort();
-  currentIndex = (index + deck.length) % deck.length;
+  const version = ++displayVersion;
+  currentIndex = wrappedIndex(index);
   const entry = deck[currentIndex];
   previous.disabled = next.disabled = false;
   position.textContent = `${String(currentIndex + 1).padStart(2, '0')} / ${String(deck.length).padStart(2, '0')}`;
+
+  // Cached cards are switched synchronously — no loading screen or skeleton.
+  const record = prepareCard(entry);
+  schedulePreloads();
+  if (record.ready) {
+    activateCard(record);
+    return;
+  }
+
+  // A cold request can still occur after very fast taps or a network error.
   card.hidden = true;
   message.hidden = false;
   message.textContent = '正在加载卡片…';
-
-  const request = new AbortController();
-  currentRequest = request;
   try {
-    const response = await fetch(entry.url, {signal: request.signal});
-    if (!response.ok) throw new Error('Card unavailable');
-    const content = await response.text();
-    if (request.signal.aborted) return;
-    renderCard(card, content, new URL(entry.url, document.baseURI), entry.language, entry.illustration_ratio);
-    card.hidden = false;
-    message.hidden = true;
-    revealImages(request);
-    requestAnimationFrame(fitCard);
-  } catch (error) {
-    if (!request.signal.aborted) message.textContent = '卡片加载失败，请切换下一张。';
+    await record.promise;
+    if (version !== displayVersion) return;
+    activateCard(record);
+    schedulePreloads();
+  } catch {
+    if (version === displayVersion) message.textContent = '卡片加载失败，请切换下一张。';
   }
 }
 
