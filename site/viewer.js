@@ -1,4 +1,6 @@
 const card = document.querySelector('#card');
+const cardBody = document.querySelector('#card-body');
+const cardIndex = document.querySelector('#card-index');
 const stage = document.querySelector('#card-stage');
 const previous = document.querySelector('#previous');
 const next = document.querySelector('#next');
@@ -153,13 +155,13 @@ function schedulePreloads() {
 function activateCard(record) {
   if (activeRecord && activeRecord !== record) {
     // Return the current (already decoded) nodes to their cache record.
-    activeRecord.holder.replaceChildren(...card.childNodes);
+    activeRecord.holder.replaceChildren(...cardBody.childNodes);
   }
   if (activeRecord !== record) {
-    card.replaceChildren(...record.holder.childNodes);
+    cardBody.replaceChildren(...record.holder.childNodes);
   }
   activeRecord = record;
-  card.querySelector('.card-index').textContent = `#${record.entry.index}`;
+  cardIndex.textContent = `#${record.entry.index}`;
   card.classList.toggle('compact', Boolean(card.querySelector('main.compact')));
   card.lang = record.entry.language || 'en';
   card.hidden = false;

@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#0b0e14">
   <meta name="color-scheme" content="dark">
   <title>Knowledge Cards</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="card-content.js" defer></script>
-  <script src="viewer.js" defer></script>
+  <link rel="stylesheet" href="styles.css?v=2">
+  <script src="card-content.js?v=2" defer></script>
+  <script src="viewer.js?v=2" defer></script>
 </head>
 <body>
   <main class="app">
@@ -19,7 +19,10 @@
 
     <section class="stage" id="card-stage" aria-label="随机知识卡片">
       <p class="status" id="message" role="status">正在加载卡片…</p>
-      <article id="card" class="card-content" hidden aria-live="polite"></article>
+      <article id="card" class="card-content" hidden aria-live="polite">
+        <span class="card-index" id="card-index"></span>
+        <div class="card-body" id="card-body"></div>
+      </article>
     </section>
 
     <nav class="controls" aria-label="切换卡片">

@@ -67,10 +67,15 @@ button { font: inherit; }
 }
 .card-index {
   justify-self: end;
-  color: var(--muted);
-  font: 580 12px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+  padding: 3px 9px;
+  border: 1px solid #4d6080;
+  border-radius: 7px;
+  background: #263652;
+  color: #f1f5ff;
+  font: 700 14px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
-.card-content > main { min-height: 0; width: 100%; }
+.card-body { display: contents; }
+.card-body > main { min-height: 0; width: 100%; }
 .card-content :is(h1,h2,h3,p,ul,dl) { margin: 0; }
 .card-content .label { display: block; margin-bottom: 4px; color: var(--accent); font-weight: 730; font-size: calc(11px * var(--fit)); letter-spacing: .08em; text-transform: uppercase; }
 .card-content h1 { font-size: calc(clamp(31px, 5vh, 53px) * var(--fit)); letter-spacing: -.035em; line-height: 1.12; font-weight: 760; }
@@ -91,9 +96,9 @@ button { font: inherit; }
 
 /* Vocabulary: reserve most of the vertical space for the actual image instead
    of shrinking the complete card inside a fixed 460-pixel rectangle. */
-.card-content > main:not(.quote) { display: flex; flex-direction: column; justify-content: space-between; gap: calc(clamp(5px, .95vh, 11px) * var(--fit)); }
-.card-content > main:not(.quote) > header { flex: 0 0 auto; }
-.card-content > main:not(.quote) > section, .card-content > main:not(.quote) > footer { flex: 0 0 auto; }
+.card-body > main:not(.quote) { display: flex; flex-direction: column; justify-content: space-between; gap: calc(clamp(5px, .95vh, 11px) * var(--fit)); }
+.card-body > main:not(.quote) > header { flex: 0 0 auto; }
+.card-body > main:not(.quote) > section, .card-body > main:not(.quote) > footer { flex: 0 0 auto; }
 /* Stable artwork region: place-holder and image share identical bounds.
    Natural image width/height cannot cause a layout jump after download. */
 .card-content .media-frame {
@@ -141,7 +146,7 @@ button { font: inherit; }
   transition: opacity 280ms ease;
 }
 .card-content .media-frame.is-loaded .illustration { opacity: 1; }
-.card-content > main:not(.quote) > .media-frame {
+.card-body > main:not(.quote) > .media-frame {
   flex: 0 1 auto;
   width: 100%;
   height: auto;
@@ -152,7 +157,7 @@ button { font: inherit; }
 }
 
 /* Quotations: an editorial reading surface instead of a tiny floating card. */
-.card-content > main.quote { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(19px, 4vh, 42px); }
+.card-body > main.quote { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(19px, 4vh, 42px); }
 .card-content .quote header { flex: 0 0 auto; width: 100%; text-align: center; }
 .card-content .quote-text {
   font-size: calc(clamp(27px, 5.8vw, 49px) * var(--fit));
@@ -187,18 +192,18 @@ button { font: inherit; }
 @media (min-width: 750px) and (min-height: 590px) {
   .app { gap: 10px; }
   .card-content { max-height: min(100%, 680px); align-self: center; }
-  .card-content > main:not(.quote) {
+  .card-body > main:not(.quote) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
     grid-template-rows: repeat(6, min-content);
     gap: clamp(11px, 2.2vh, 20px) clamp(27px, 4.4vw, 68px);
     align-content: space-evenly;
   }
-  .card-content > main:not(.quote) > header, .card-content > main:not(.quote) > section, .card-content > main:not(.quote) > footer { grid-column: 1; }
-  .card-content > main:not(.quote) > .media-frame { grid-column: 2; grid-row: 1 / span 7; width: 100%; height: auto; max-height: 100%; min-height: 0; margin: 0; align-self: center; }
-  .card-content > main.quote { display: grid; grid-template-columns: 44% minmax(0, 1fr); grid-template-rows: minmax(0,1fr); gap: 40px; }
-  .card-content > main.quote header { align-self: center; }
-  .card-content > main.quote .media-frame { height: auto; max-height: 95%; min-height: 0; align-self: center; }
+  .card-body > main:not(.quote) > header, .card-body > main:not(.quote) > section, .card-body > main:not(.quote) > footer { grid-column: 1; }
+  .card-body > main:not(.quote) > .media-frame { grid-column: 2; grid-row: 1 / span 7; width: 100%; height: auto; max-height: 100%; min-height: 0; margin: 0; align-self: center; }
+  .card-body > main.quote { display: grid; grid-template-columns: 44% minmax(0, 1fr); grid-template-rows: minmax(0,1fr); gap: 40px; }
+  .card-body > main.quote header { align-self: center; }
+  .card-body > main.quote .media-frame { height: auto; max-height: 95%; min-height: 0; align-self: center; }
   .card-content .quote-text { font-size: calc(clamp(35px, 4vw, 57px) * var(--fit)); }
 }
 @media (max-width: 749px) {
@@ -214,7 +219,7 @@ button { font: inherit; }
   .controls { height: 40px; }
   .page-btn { height: 35px; }
   .card-content { padding-block: 11px; }
-  .card-content > main:not(.quote) { gap: calc(4px * var(--fit)); }
+  .card-body > main:not(.quote) { gap: calc(4px * var(--fit)); }
   .card-content .label { font-size: calc(10px * var(--fit)); }
   .card-content h1 { font-size: calc(29px * var(--fit)); }
   .card-content .phonetics { font-size: calc(13px * var(--fit)); margin-top: 2px; }
@@ -231,8 +236,8 @@ button { font: inherit; }
   .card-content .media-frame .illustration { transition: none; }
 }
 
-.card-content > main.history,
-.card-content > main.classical {
+.card-body > main.history,
+.card-body > main.classical {
   display: flex;
   flex-direction: column;
   align-items: center;

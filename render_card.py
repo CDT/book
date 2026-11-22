@@ -62,7 +62,7 @@ def render_card(card, body, source_dir, archive, card_index):
 
     html = ElementTree.tostring(body, encoding="unicode", method="html")
     story = pymupdf.Story(html, user_css=CARD_CSS, archive=archive)
-    content = pymupdf.Rect(22, 24, IMAGE_WIDTH - 22, IMAGE_HEIGHT - 28)
+    content = pymupdf.Rect(22, 33, IMAGE_WIDTH - 22, IMAGE_HEIGHT - 28)
     more, _ = story.place(content)
     if more:
         raise ValueError(f"{card.name}: content exceeds one X3 page. Shorten the card and rebuild.")
@@ -81,9 +81,11 @@ def render_card(card, body, source_dir, archive, card_index):
         if not blocks or any(block[0] < content.x0 - 1 or block[2] > content.x1 + 1 for block in blocks):
             raise ValueError(f"{card.name}: text must fit within the X3 page margins")
         label = f"#{card_index}"
-        label_width = pymupdf.get_text_length(label, fontname="helv", fontsize=12)
-        page.insert_text((content.x1 - label_width, IMAGE_HEIGHT - 11), label,
-                         fontname="helv", fontsize=12, color=(0.25, 0.25, 0.25))
+        label_font = "hebo"
+        label_size = 16
+        label_width = pymupdf.get_text_length(label, fontname=label_font, fontsize=label_size)
+        page.insert_text((content.x1 - label_width, 23), label,
+                         fontname=label_font, fontsize=label_size)
         pixmap = page.get_pixmap(colorspace=pymupdf.csGRAY, alpha=False)
         image = Image.frombytes("L", (pixmap.width, pixmap.height), pixmap.samples)
         encoded = BytesIO()
