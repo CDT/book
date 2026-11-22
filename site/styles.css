@@ -84,21 +84,60 @@ button { font: inherit; }
 .card-content > main:not(.quote) { display: flex; flex-direction: column; justify-content: space-between; gap: calc(clamp(5px, .95vh, 11px) * var(--fit)); }
 .card-content > main:not(.quote) > header { flex: 0 0 auto; }
 .card-content > main:not(.quote) > section, .card-content > main:not(.quote) > footer { flex: 0 0 auto; }
-.card-content .illustration {
-  display: block;
-  background: transparent;
+/* Stable artwork region: place-holder and image share identical bounds.
+   Natural image width/height cannot cause a layout jump after download. */
+.card-content .media-frame {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  overflow: hidden;
   border-radius: 13px;
-  padding: 0;
-  object-fit: contain;
-  min-height: 0;
+  background: #222c3c;
+  aspect-ratio: var(--illustration-ratio, auto);
 }
-.card-content > main:not(.quote) > .illustration {
+.card-content .media-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(106deg, #202b3b 12%, #354357 38%, #202b3b 64%);
+  background-size: 230% 100%;
+  animation: image-placeholder 1.6s ease-in-out infinite;
+  transition: opacity 260ms ease;
+}
+@keyframes image-placeholder { from { background-position: 110% 0; } to { background-position: -110% 0; } }
+.card-content .media-frame.is-loaded::before { opacity: 0; animation: none; }
+.card-content .media-frame.is-error::before { animation: none; background: #263144; }
+.card-content .media-frame.is-error::after {
+  content: '图片暂不可用';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.card-content .media-frame .illustration {
+  position: absolute;
+  display: block;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+.card-content .media-frame.is-loaded .illustration { opacity: 1; }
+.card-content > main:not(.quote) > .media-frame {
   flex: 0 1 auto;
   width: 100%;
   height: auto;
   max-height: 51%;
   min-height: calc(65px * var(--fit));
-  align-self: center;
+  align-self: stretch;
   margin-block: calc(4px * var(--fit));
 }
 
@@ -116,16 +155,16 @@ button { font: inherit; }
   max-width: 26ch;
   margin-inline: auto;
 }
-.card-content .quote > .illustration {
-  height: auto;
+.card-content .quote > .media-frame {
+  flex: 0 1 auto;
   width: 100%;
+  height: auto;
   max-width: 100%;
   max-height: 66%;
-  object-fit: contain;
+  min-height: 0;
   align-self: center;
   justify-self: center;
-  background: transparent;
-  border-radius: 0;
+  border-radius: 9px;
 }
 
 .controls { flex: 0 0 auto; width: min(100%, 550px); align-self: center; height: clamp(45px, 6vh, 60px); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 25px; }
@@ -146,10 +185,10 @@ button { font: inherit; }
     align-content: space-evenly;
   }
   .card-content > main:not(.quote) > header, .card-content > main:not(.quote) > section, .card-content > main:not(.quote) > footer { grid-column: 1; }
-  .card-content > main:not(.quote) > .illustration { grid-column: 2; grid-row: 1 / span 7; width: 100%; height: 100%; max-height: 100%; min-height: 0; margin: 0; align-self: center; }
+  .card-content > main:not(.quote) > .media-frame { grid-column: 2; grid-row: 1 / span 7; width: 100%; height: auto; max-height: 100%; min-height: 0; margin: 0; align-self: center; }
   .card-content > main.quote { display: grid; grid-template-columns: 44% minmax(0, 1fr); grid-template-rows: minmax(0,1fr); gap: 40px; }
   .card-content > main.quote header { align-self: center; }
-  .card-content > main.quote .illustration { height: auto; max-height: 95%; }
+  .card-content > main.quote .media-frame { height: auto; max-height: 95%; min-height: 0; align-self: center; }
   .card-content .quote-text { font-size: calc(clamp(35px, 4vw, 57px) * var(--fit)); }
 }
 @media (max-width: 749px) {
@@ -175,4 +214,9 @@ button { font: inherit; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .page-btn, .download { transition: background .12s, border-color .12s, color .12s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-content .media-frame::before { animation: none; transition: none; }
+  .card-content .media-frame .illustration { transition: none; }
 }

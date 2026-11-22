@@ -33,6 +33,33 @@ function fitCard() {
   }
 }
 
+// Keep the placeholder visible until pixels are decoded, then fade in the image.
+// The image is absolutely positioned; neither load nor decode can shift text.
+function revealImages(request) {
+  for (const img of card.querySelectorAll('.media-frame img')) {
+    const frame = img.closest('.media-frame');
+    const finish = () => {
+      if (request.signal.aborted || !img.isConnected) return;
+      frame.classList.remove('is-loading');
+      frame.classList.add(img.naturalWidth > 0 ? 'is-loaded' : 'is-error');
+    };
+    if (typeof img.decode === 'function') {
+      img.decode().then(finish, () => {
+        if (img.complete) finish();
+        else {
+          img.addEventListener('load', finish, {once: true, signal: request.signal});
+          img.addEventListener('error', finish, {once: true, signal: request.signal});
+        }
+      });
+    } else if (img.complete) {
+      finish();
+    } else {
+      img.addEventListener('load', finish, {once: true, signal: request.signal});
+      img.addEventListener('error', finish, {once: true, signal: request.signal});
+    }
+  }
+}
+
 async function showCard(index) {
   if (!deck.length) return;
   currentRequest?.abort();
@@ -51,13 +78,10 @@ async function showCard(index) {
     if (!response.ok) throw new Error('Card unavailable');
     const content = await response.text();
     if (request.signal.aborted) return;
-    renderCard(card, content, new URL(entry.url, document.baseURI), entry.language);
+    renderCard(card, content, new URL(entry.url, document.baseURI), entry.language, entry.illustration_ratio);
     card.hidden = false;
     message.hidden = true;
-    const images = card.querySelectorAll('img');
-    images.forEach(img => {
-      if (!img.complete) img.addEventListener('load', fitCard, {once: true});
-    });
+    revealImages(request);
     requestAnimationFrame(fitCard);
   } catch (error) {
     if (!request.signal.aborted) message.textContent = '卡片加载失败，请切换下一张。';

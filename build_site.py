@@ -74,6 +74,17 @@ def build():
     shutil.copytree(SOURCE_SITE, OUTPUT)
     shutil.copytree(SOURCE_CARDS, OUTPUT / "cards")
     optimize_web_illustrations()
+    # Web image dimensions are known after whitespace trimming. Expose their
+    # final aspect ratio so the viewer reserves a correctly sized placeholder
+    # before requesting the image, avoiding layout shift on slow connections.
+    for entry in catalog:
+        rendered_card = OUTPUT / entry["url"]
+        page = ElementTree.parse(rendered_card).getroot()
+        image = next(page.iter(f"{XHTML}img"), None)
+        if image is not None:
+            artwork = (rendered_card.parent / image.attrib["src"]).resolve()
+            with Image.open(artwork) as source:
+                entry["illustration_ratio"] = round(source.width / source.height, 5)
     shutil.copy2(epub, OUTPUT / "book.epub")
     (OUTPUT / "catalog.json").write_text(
         json.dumps(catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
