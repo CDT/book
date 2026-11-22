@@ -19,5 +19,6 @@ function renderCard(target, xhtml, baseUrl, language) {
 
   target.lang = language || documentNode.documentElement.getAttribute('xml:lang') || 'en';
   target.classList.toggle('compact', content.classList.contains('compact'));
-  target.replaceChildren(...content.childNodes);
+  // Preserve the main element: responsive layouts depend on its .quote / .compact class.
+  target.replaceChildren(content);
 }

@@ -11,7 +11,6 @@ let currentRequest = null;
 
 function shuffle(cards) {
   const copy = [...cards];
-  // Fisher-Yates: each card appears once before the shuffled deck repeats.
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [copy[i], copy[j]] = [copy[j], copy[i]];
@@ -19,15 +18,19 @@ function shuffle(cards) {
   return copy;
 }
 
+// Never scale the complete card: that also shrinks the picture and creates
+// large side margins. Compress typography only if a very short viewport needs it.
 function fitCard() {
   if (card.hidden) return;
-  card.style.setProperty('--card-scale', '1');
-  const availableWidth = Math.max(1, stage.clientWidth - 12);
-  const availableHeight = Math.max(1, stage.clientHeight - 12);
-  const naturalWidth = card.offsetWidth;
-  const naturalHeight = card.offsetHeight;
-  const scale = Math.min(1, availableWidth / naturalWidth, availableHeight / naturalHeight);
-  card.style.setProperty('--card-scale', scale.toFixed(4));
+  const content = card.querySelector('main');
+  if (!content) return;
+  card.style.setProperty('--fit', '1');
+  const fits = () => content.scrollHeight <= content.clientHeight + 2 && content.scrollWidth <= content.clientWidth + 2;
+  if (fits()) return;
+  for (let d = .96; d >= .60; d -= .04) {
+    card.style.setProperty('--fit', String(Number(d.toFixed(2))));
+    if (fits()) break;
+  }
 }
 
 async function showCard(index) {
@@ -44,15 +47,16 @@ async function showCard(index) {
   const request = new AbortController();
   currentRequest = request;
   try {
-    const response = await fetch(entry.url, { signal: request.signal });
+    const response = await fetch(entry.url, {signal: request.signal});
     if (!response.ok) throw new Error('Card unavailable');
     const content = await response.text();
     if (request.signal.aborted) return;
     renderCard(card, content, new URL(entry.url, document.baseURI), entry.language);
     card.hidden = false;
     message.hidden = true;
-    card.querySelectorAll('img').forEach(img => {
-      if (!img.complete) img.addEventListener('load', fitCard, { once: true });
+    const images = card.querySelectorAll('img');
+    images.forEach(img => {
+      if (!img.complete) img.addEventListener('load', fitCard, {once: true});
     });
     requestAnimationFrame(fitCard);
   } catch (error) {
@@ -62,10 +66,7 @@ async function showCard(index) {
 
 function onKeyDown(event) {
   if (event.key === 'ArrowLeft') { event.preventDefault(); showCard(currentIndex - 1); }
-  if (event.key === 'ArrowRight' || event.key === ' ') {
-    event.preventDefault();
-    showCard(currentIndex + 1);
-  }
+  if (event.key === 'ArrowRight' || event.key === ' ') { event.preventDefault(); showCard(currentIndex + 1); }
 }
 
 async function start() {
@@ -78,31 +79,22 @@ async function start() {
   let touchX = null;
   let touchY = null;
   stage.addEventListener('touchstart', e => {
-    if (e.touches.length === 1) {
-      touchX = e.touches[0].clientX;
-      touchY = e.touches[0].clientY;
-    }
-  }, { passive: true });
+    if (e.touches.length === 1) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }
+  }, {passive: true});
   stage.addEventListener('touchend', e => {
     if (touchX === null || !e.changedTouches.length) return;
     const dx = e.changedTouches[0].clientX - touchX;
     const dy = e.changedTouches[0].clientY - touchY;
-    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-      showCard(currentIndex + (dx < 0 ? 1 : -1));
-    }
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) showCard(currentIndex + (dx < 0 ? 1 : -1));
     touchX = touchY = null;
-  }, { passive: true });
+  }, {passive: true});
 
   try {
-    const response = await fetch('catalog.json', { cache: 'no-cache' });
+    const response = await fetch('catalog.json', {cache: 'no-cache'});
     if (!response.ok) throw new Error('Catalog unavailable');
-    const catalog = await response.json();
-    deck = shuffle(catalog);
+    deck = shuffle(await response.json());
     if (!deck.length) throw new Error('Empty deck');
     await showCard(0);
-  } catch {
-    message.textContent = '无法加载卡片，请刷新页面。';
-  }
+  } catch { message.textContent = '无法加载卡片，请刷新页面。'; }
 }
-
 start();

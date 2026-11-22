@@ -1,6 +1,7 @@
 """Generate a static Knowledge Cards website for GitHub Pages.
 
-Run build_epub.py first: the generated website includes the X3 EPUB.
+Run build_epub.py first. Illustrations in dist/ are whitespace-trimmed solely
+for web reading; original source images and the X3 EPUB are left unchanged.
 """
 
 import json
@@ -9,12 +10,35 @@ from pathlib import Path
 from urllib.parse import quote
 from xml.etree import ElementTree
 
+from PIL import Image
+
 ROOT = Path(__file__).resolve().parent
 SOURCE_CARDS = ROOT / "cards"
 SOURCE_SITE = ROOT / "site"
 OUTPUT = ROOT / "dist"
 XHTML = "{http://www.w3.org/1999/xhtml}"
 XML_LANG = "{http://www.w3.org/XML/1998/namespace}lang"
+
+
+def optimize_web_illustrations():
+    """Crop white paper edges in the published copy, preserving source art."""
+    for path in (OUTPUT / "cards" / "images").glob("*.jpg"):
+        with Image.open(path) as source:
+            gray = source.convert("L")
+            ink = gray.point(lambda shade: 255 if shade < 222 else 0)
+            bounds = ink.getbbox()
+            if not bounds:
+                continue
+            left, top, right, bottom = bounds
+            width, height = gray.size
+            pad = max(7, round(min(width, height) * 0.052))
+            bounds = (
+                max(0, left - pad), max(0, top - pad),
+                min(width, right + pad), min(height, bottom + pad),
+            )
+            if bounds[2] - bounds[0] >= width - 10 and bounds[3] - bounds[1] >= height - 10:
+                continue
+            gray.crop(bounds).save(path, "JPEG", quality=87, optimize=True)
 
 
 def build():
@@ -49,12 +73,13 @@ def build():
         shutil.rmtree(OUTPUT)
     shutil.copytree(SOURCE_SITE, OUTPUT)
     shutil.copytree(SOURCE_CARDS, OUTPUT / "cards")
+    optimize_web_illustrations()
     shutil.copy2(epub, OUTPUT / "book.epub")
     (OUTPUT / "catalog.json").write_text(
         json.dumps(catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     (OUTPUT / ".nojekyll").touch()
-    print(f"Built {OUTPUT} with {len(catalog)} cards and X3 EPUB")
+    print(f"Built {OUTPUT} with {len(catalog)} cards, cropped web art, and X3 EPUB")
 
 
 if __name__ == "__main__":
