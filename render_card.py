@@ -39,8 +39,11 @@ img { width: 272pt; height: auto; }
 .quote h1 { font: bold 26pt/1.35 sans-serif; margin: 12pt 0 14pt; }
 .quote img { width: 305pt; height: auto; margin: 5pt auto; }
 .attribution, .date { color: #444; font: 16pt/1.25 sans-serif; }
-.history h1 { font-size: 30pt; }
-.history .date { margin-bottom: 12pt; }
+.classical img, .history img { width: 345pt; margin: 8pt 0 12pt; }
+.history { font-size: 20pt; }
+.history img { width: 310pt; margin: 6pt auto 9pt; }
+.history h1 { font-size: 27pt; }
+.history .date { margin-bottom: 8pt; }
 """
 
 
@@ -65,7 +68,9 @@ def render_card(card, body, source_dir, archive, card_index):
     content = pymupdf.Rect(22, 33, IMAGE_WIDTH - 22, IMAGE_HEIGHT - 28)
     more, _ = story.place(content)
     if more:
-        raise ValueError(f"{card.name}: content exceeds one X3 page. Shorten the card and rebuild.")
+        raise ValueError(
+            f"{card.relative_to(source_dir)}: content exceeds one X3 page. Shorten the card and rebuild."
+        )
 
     output = BytesIO()
     writer = pymupdf.DocumentWriter(output)

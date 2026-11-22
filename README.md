@@ -41,6 +41,6 @@ files locally, run `python build_epub.py && python build_site.py`.
 
 ## Deck contents
 
-The 247-card deck includes 17 English vocabulary cards and 30 illustrated selections from 《增广贤文》 restored from the original X3 EPUB. It also includes 50 dated events in Chinese history in Chinese, 50 dated events in world history in English, and 100 excerpts from classical Chinese poetry and prose with their attributions.
+The 247-card deck includes 17 English vocabulary cards and 30 illustrated selections from 《增广贤文》 restored from the original X3 EPUB. It also includes 50 dated events in Chinese history in Chinese, 50 dated events in world history in English, and 100 excerpts from classical Chinese poetry and prose with their attributions. Each event and excerpt has its own grayscale illustration.
 
 The web viewer and EPUB number cards in source file order before shuffling. The web navigation counter shows your position in the current shuffle.

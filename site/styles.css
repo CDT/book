@@ -254,3 +254,31 @@ button { font: inherit; }
   line-height: 1.45;
 }
 .card-content .history .date { margin-bottom: 8px; }
+.card-content .classical .attribution { margin-top: calc(10px * var(--fit)); }
+.card-body > main.history > .media-frame,
+.card-body > main.classical > .media-frame {
+  flex-shrink: 1;
+  width: min(100%, 630px);
+  min-height: calc(60px * var(--fit));
+  max-height: 52%;
+  align-self: center;
+  margin: 0;
+}
+
+@media (min-width: 750px) and (min-height: 590px) {
+  .card-body > main.history:has(> .media-frame),
+  .card-body > main.classical:has(> .media-frame) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+    grid-template-rows: auto auto;
+    align-content: center;
+    gap: calc(14px * var(--fit)) clamp(24px, 4vw, 58px);
+  }
+  .card-body > main.history > :is(header, .definition) { grid-column: 1; text-align: left; }
+  .card-body > main.classical > .media-frame,
+  .card-body > main.history > .media-frame {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    max-height: 100%;
+  }
+}

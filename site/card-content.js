@@ -27,6 +27,8 @@ function renderCard(target, xhtml, baseUrl, language, illustrationRatio) {
     const ratio = Number(illustrationRatio);
     if (Number.isFinite(ratio) && ratio > 0.2 && ratio < 8) {
       slot.style.aspectRatio = String(ratio);
+    } else if (content.matches('.classical, .history')) {
+      slot.style.aspectRatio = '1.5';
     } else {
       slot.style.aspectRatio = content.classList.contains('quote') ? '1' : '1.65';
     }
