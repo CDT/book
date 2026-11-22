@@ -10,7 +10,7 @@ Install the build dependencies with `python -m pip install -r requirements.txt`.
 
 The Xteink X3 edition packages each knowledge point as one baseline grayscale JPEG inside its own EPUB page. The EPUB declares a 528 × 792 portrait viewport. Each image is 448 × 610 to leave space for the reader’s margins and chapter indicator. On the reader, keep EPUB images enabled. On devices that reflow EPUB text, the text is already drawn into each card image.
 
-Put each knowledge point in its own UTF-8 XHTML file under `cards/`. Include one small, high-contrast illustration to support the meaning, and keep the explanation to one short definition, a useful phrase and one short example. If a card is too long, the build reports its filename. Trim the card and rebuild.
+Put each knowledge point in its own UTF-8 XHTML file under `cards/`. Keep the text short enough for one X3 page. For illustrated vocabulary cards, use one small, high-contrast image. If a card is too long, the build reports its filename. Trim the card and rebuild.
 
 | Category | Directory |
 | --- | --- |
@@ -39,6 +39,8 @@ publish the site from a public repository instead.
 To preview locally, run `python serve_cards.py`. To test the deploy
 files locally, run `python build_epub.py && python build_site.py`.
 
-## Restored classical Chinese quotations
+## Deck contents
 
-The collection also contains **30 illustrated selections from 增广贤文** under `cards/citations/`, restored from the original X3 EPUB. The web reader shuffles these together with the **17 English vocabulary cards** into a single 47-card deck; it intentionally has no category/search/list interface. Each quote retains its separate grayscale illustration, and EPUB generation still enforces one page per card.
+The 247-card deck includes 17 English vocabulary cards and 30 illustrated selections from 《增广贤文》 restored from the original X3 EPUB. It also includes 50 dated events in Chinese history in Chinese, 50 dated events in world history in English, and 100 excerpts from classical Chinese poetry and prose with their attributions.
+
+The web viewer and EPUB number cards in source file order before shuffling. The web navigation counter shows your position in the current shuffle.

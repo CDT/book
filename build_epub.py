@@ -28,7 +28,7 @@ MEDIA_TYPES = {
 
 def build_epub(source_dir, output, rng):
     source_dir = source_dir.resolve()
-    cards = sorted(source_dir.rglob("*.xhtml"))
+    cards = list(enumerate(sorted(source_dir.rglob("*.xhtml")), start=1))
     if not cards:
         raise ValueError(f"No XHTML cards found under {source_dir}")
     rng.shuffle(cards)
@@ -42,7 +42,7 @@ def build_epub(source_dir, output, rng):
     languages = set()
     pages = []
 
-    for number, card in enumerate(cards, start=1):
+    for number, (card_index, card) in enumerate(cards, start=1):
         page = ElementTree.parse(card).getroot()
         title = (page.findtext(f"{XHTML}head/{XHTML}title") or "").strip()
         language = page.get(XML_LANG)
@@ -63,8 +63,8 @@ def build_epub(source_dir, output, rng):
             f'xml:lang={quoteattr(language)}>{escape(title)}</a></li>'
         )
 
-        alt = " ".join(" ".join(body.itertext()).split())
-        image = render_card(card, body, source_dir, archive)
+        alt = f"#{card_index} " + " ".join(" ".join(body.itertext()).split())
+        image = render_card(card, body, source_dir, archive, card_index)
         xhtml = f"""<?xml version="1.0" encoding="utf-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml" lang={quoteattr(language)} xml:lang={quoteattr(language)}>
   <head>

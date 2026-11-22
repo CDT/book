@@ -39,5 +39,7 @@ function renderCard(target, xhtml, baseUrl, language, illustrationRatio) {
   target.lang = language || documentNode.documentElement.getAttribute('xml:lang') || 'en';
   target.classList.toggle('compact', content.classList.contains('compact'));
   // Preserve the main element: responsive layouts depend on its .quote / .compact class.
-  target.replaceChildren(content);
+  const index = document.createElement('span');
+  index.className = 'card-index';
+  target.replaceChildren(index, content);
 }

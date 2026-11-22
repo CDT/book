@@ -159,6 +159,7 @@ function activateCard(record) {
     card.replaceChildren(...record.holder.childNodes);
   }
   activeRecord = record;
+  card.querySelector('.card-index').textContent = `#${record.entry.index}`;
   card.classList.toggle('compact', Boolean(card.querySelector('main.compact')));
   card.lang = record.entry.language || 'en';
   card.hidden = false;
@@ -225,7 +226,8 @@ async function start() {
   try {
     const response = await fetch('catalog.json', {cache: 'no-cache'});
     if (!response.ok) throw new Error('Catalog unavailable');
-    deck = shuffle(await response.json());
+    const catalog = await response.json();
+    deck = shuffle(catalog.map((entry, index) => ({...entry, index: index + 1})));
     if (!deck.length) throw new Error('Empty deck');
     await showCard(0);
   } catch { message.textContent = '无法加载卡片，请刷新页面。'; }
